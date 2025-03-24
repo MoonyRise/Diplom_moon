@@ -1,0 +1,76 @@
+
+apt update 
+sudo ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519
+cat /root/.ssh/id_ed25519.pub
+git clone git@github.com:Cyber1993/cloudCICD.git
+ll
+cd cloudCICD/
+ll
+touch hello
+git status
+git add .
+git status
+git config --global user.email "shupik3@gmail.com"
+git config --global user.name "Cyber"
+git commit -m "test file SSH"
+git status
+git branch
+git push -u origin master
+
+sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins -y
+sudo apt update
+sudo apt install fontconfig openjdk-17-jre -y
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+
+git clone https://github.com/Cyber1993/cloud.git
+
+git clone https://github.com/Cyber1993/cloud.git
+cd cloud
+ls -l
+mv Dockerfile-front FrontEnd/my-app/Dockerfile
+mv Dockerfile-bek BackEnd/Amazon-clone/Dockerfile
+mv FrontEnd/ /home/cyber/cloudCICD/
+mv BackEnd/ /home/cyber/cloudCICD/
+
+
+cat /root/.ssh/id_ed25519
+sudo mkdir -p /var/lib/jenkins/.ssh/
+sudo cp /root/.ssh/id_ed25519 /var/lib/jenkins/.ssh/
+sudo cp /root/.ssh/id_ed25519.pub /var/lib/jenkins/.ssh/
+sudo chown -R jenkins:jenkins /var/lib/jenkins/.ssh/
+sudo chmod 700 /var/lib/jenkins/.ssh/
+sudo chmod 600 /var/lib/jenkins/.ssh/id_ed25519
+sudo chmod 644 /var/lib/jenkins/.ssh/id_ed25519.pub
+sudo -u jenkins ssh-keyscan -t ed25519 github.com >> /var/lib/jenkins/.ssh/known_hosts
+sudo systemctl restart jenkins
+
+
+mv hello Jenkinsfile
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
