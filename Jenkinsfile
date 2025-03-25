@@ -43,13 +43,13 @@ pipeline {
         stage('Docker push') {
             steps {
                 script {
-                    sh 'sudo docker tag bek yurashupik/cloud:bek'
+                    sh 'sudo docker tag bek moonyrise/monitor:bek'
 
-                    sh 'sudo docker push yurashupik/cloud:bek'
+                    sh 'sudo docker push moonyrise/monitor:bek'
 
-                    sh 'sudo docker tag front yurashupik/cloud:front'
+                    sh 'sudo docker tag front moonyrise/monitor:front'
 
-                    sh 'sudo docker push yurashupik/cloud:front'
+                    sh 'sudo docker push moonyrise/monitor:front'
                 }
             }
         }
