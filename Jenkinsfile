@@ -12,7 +12,7 @@ pipeline {
         }
 	    stage('Docker-build-bek') {
             steps {
-                sh 'sudo docker build -t bek /var/lib/jenkins/workspace/site/BackEnd/Amazon-clone/'
+                sh 'sudo docker build -t bek /var/lib/jenkins/workspace/Diplom_moon/BackEnd/Amazon-clone/'
             }
         }
         stage('docker run bek') {
@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Docker-build-front') {
             steps {
-                sh 'sudo docker build -t front /var/lib/jenkins/workspace/site/FrontEnd/my-app/'
+                sh 'sudo docker build -t front /var/lib/jenkins/workspace/Diplom_moon/FrontEnd/my-app/'
             }
         }
         stage('docker run front') {
