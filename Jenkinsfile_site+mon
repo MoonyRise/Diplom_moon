@@ -1,0 +1,114 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Cleanup old containers') {
+            steps {
+                script {
+                    sh 'docker rm -f bek || true'
+                    sh 'docker rm -f front || true'
+                    sh 'docker rm -f sql111 || true'
+                }
+            }
+        }
+
+        stage('Create Database') {
+            steps {
+                script {
+                    sh '''
+                    docker run -d \
+                        --name sql111 \
+                        --hostname sql1 \
+                        -e "ACCEPT_EULA=Y" \
+                        -e "MSSQL_SA_PASSWORD=Qwerty-1" \
+                        -p 1433:1433 \
+                        mcr.microsoft.com/mssql/server:2022-latest
+                    '''
+                    sleep 10
+                    sh 'docker ps | grep sql111'
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    sh 'docker build -t bek /var/lib/jenkins/workspace/Diplom_moon/BackEnd/Amazon-clone/'
+                    sh 'docker build -t front /var/lib/jenkins/workspace/Diplom_moon/FrontEnd/my-app/'
+                }
+            }
+        }
+
+        stage('Check Images Before Push') {
+            steps {
+                script {
+                    sh 'docker images'
+                }
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: '230d16c7-5b58-4f6e-b907-4e454834e110', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    }
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    sh 'docker tag bek moonyrise/monitor:bek'
+                    sh 'docker push moonyrise/monitor:bek'
+                    sh 'docker tag front moonyrise/monitor:front'
+                    sh 'docker push moonyrise/monitor:front'
+                }
+            }
+        }
+
+        stage('Run Containers') {
+            steps {
+                script {
+                    sh 'docker run -d --name bek -p 5034:5034 moonyrise/monitor:bek'
+                    sh 'docker run -d --name front -p 81:80 moonyrise/monitor:front'
+                }
+            }
+        }
+
+        stage('Setup Monitoring') {
+            steps {
+                script {
+                    sh 'chmod +x run.sh && bash run.sh'
+                }
+            }
+        }
+
+        stage('Docker Push Monitoring') {
+            steps {
+                script {
+                    sh 'docker pull grafana/grafana:latest'
+                    sh 'docker tag grafana/grafana:latest moonyrise/monitor:grafana'
+                    sh 'docker push moonyrise/monitor:grafana'
+
+                    sh 'docker pull prom/prometheus:latest'
+                    sh 'docker tag prom/prometheus:latest moonyrise/monitor:prometheus'
+                    sh 'docker push moonyrise/monitor:prometheus'
+
+                    sh 'docker pull prom/node-exporter:latest'
+                    sh 'docker tag prom/node-exporter:latest moonyrise/monitor:node-exporter'
+                    sh 'docker push moonyrise/monitor:node-exporter'
+
+                    sh 'docker pull prom/alertmanager:latest'
+                    sh 'docker tag prom/alertmanager:latest moonyrise/monitor:alertmanager'
+                    sh 'docker push moonyrise/monitor:alertmanager'
+
+                    sh 'docker pull gcr.io/cadvisor/cadvisor:latest'
+                    sh 'docker tag gcr.io/cadvisor/cadvisor:latest moonyrise/monitor:cadvisor'
+                    sh 'docker push moonyrise/monitor:cadvisor'
+                }
+            }
+        }
+    }
+}
